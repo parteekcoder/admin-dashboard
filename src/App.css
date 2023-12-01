@@ -3,8 +3,6 @@
   margin: 0;
   padding: 0;
 }
-/* App.css */
-/* App.css */
 
 .outer-container {
   margin: 20px;
@@ -72,5 +70,3 @@ button:hover {
 .bulk-delete-button:hover {
   background-color: #c0392b;
 }
-
-/* Add more styles as needed */
