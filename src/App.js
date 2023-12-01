@@ -7,6 +7,8 @@ function App() {
   const [editdingRow, setEditingRow] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectAll, setSelectAll] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -54,6 +56,7 @@ function App() {
     const updatedData = data.filter((row) => !selectedRows.includes(row.id));
     setData(updatedData);
     setSelectedRows([]);
+    setSelectAll(false);
   };
 
   const toggleRowSelection = (id) => {
@@ -67,17 +70,64 @@ function App() {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows([]);
+    } else {
+      const length = data.length
+      let allRowIds = [];
+      for(var i = currentPage*10 -10 ; i<currentPage*10;i++){
+        allRowIds.push(data[i].id);
+      }
+      setSelectedRows(allRowIds);
+    }
+    setSelectAll(!selectAll);
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleSearch = () => {
+
+    const searchTermLower = searchTerm.toLowerCase();
+    const filteredData = data.filter(
+      (row) =>
+        row.name.toLowerCase().includes(searchTermLower) ||
+        row.email.toLowerCase().includes(searchTermLower) ||
+        row.role.toLowerCase().includes(searchTermLower)
+    );
+    setData(filteredData);
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="outer-container">
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={handleSearchInputChange}
+          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+        />
+      </div>
+
       <table>
         <thead>
           <tr>
+            <th>
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={handleSelectAll}
+              />
+            </th>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
@@ -92,6 +142,13 @@ function App() {
         <tbody>
           {currentItems.map((row) => (
             <tr key={row.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={selectedRows.includes(row.id)}
+                  onChange={() => toggleRowSelection(row.id)}
+                />
+              </td>
               <td>{row.id}</td>
               <td>
                 {editingId === row.id ? (
