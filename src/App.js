@@ -6,6 +6,8 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editdingRow, setEditingRow] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchData();
@@ -65,6 +67,12 @@ function App() {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="outer-container">
       <table>
@@ -82,7 +90,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
+          {currentItems.map((row) => (
             <tr key={row.id}>
               <td>{row.id}</td>
               <td>
@@ -145,6 +153,15 @@ function App() {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      <div className="pagination">
+        {Array.from({ length: Math.ceil(data.length / itemsPerPage) }).map((_, index) => (
+          <button key={index} onClick={() => paginate(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
